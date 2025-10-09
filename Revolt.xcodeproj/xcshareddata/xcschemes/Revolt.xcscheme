@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D49B704E29C4D3FE009494A5"
-               BuildableName = "Revolt.app"
-               BlueprintName = "Revolt"
+               BuildableName = "Stoat.app"
+               BlueprintName = "Stoat"
                ReferencedContainer = "container:Revolt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,8 +44,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D49B704E29C4D3FE009494A5"
-            BuildableName = "Revolt.app"
-            BlueprintName = "Revolt"
+            BuildableName = "Stoat.app"
+            BlueprintName = "Stoat"
             ReferencedContainer = "container:Revolt.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -68,8 +68,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D49B704E29C4D3FE009494A5"
-            BuildableName = "Revolt.app"
-            BlueprintName = "Revolt"
+            BuildableName = "Stoat.app"
+            BlueprintName = "Stoat"
             ReferencedContainer = "container:Revolt.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

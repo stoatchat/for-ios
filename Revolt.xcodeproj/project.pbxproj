@@ -350,7 +350,7 @@
 		17F555262AFC229900958F2F /* ServerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSettings.swift; sourceTree = "<group>"; };
 		17F8B7082C7983730065F1DE /* CreateServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateServer.swift; sourceTree = "<group>"; };
 		17F9D7622C9208B500D0BB6F /* MessageReactionsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionsSheet.swift; sourceTree = "<group>"; };
-		D49B704F29C4D3FE009494A5 /* Revolt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Revolt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D49B704F29C4D3FE009494A5 /* Stoat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stoat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D49B705229C4D3FE009494A5 /* RevoltApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevoltApp.swift; sourceTree = "<group>"; };
 		D49B705629C4D3FE009494A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D49B705929C4D3FE009494A5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -776,7 +776,7 @@
 		D49B705029C4D3FE009494A5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D49B704F29C4D3FE009494A5 /* Revolt.app */,
+				D49B704F29C4D3FE009494A5 /* Stoat.app */,
 				17DE7DB22BFAEC3F00C99188 /* Types.framework */,
 				175465CA2C42147B0076B393 /* NotificationService.appex */,
 			);
@@ -868,9 +868,9 @@
 			productReference = 17DE7DB22BFAEC3F00C99188 /* Types.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		D49B704E29C4D3FE009494A5 /* Revolt */ = {
+		D49B704E29C4D3FE009494A5 /* Stoat */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D49B707329C4D3FE009494A5 /* Build configuration list for PBXNativeTarget "Revolt" */;
+			buildConfigurationList = D49B707329C4D3FE009494A5 /* Build configuration list for PBXNativeTarget "Stoat" */;
 			buildPhases = (
 				D49B704B29C4D3FE009494A5 /* Sources */,
 				D49B704C29C4D3FE009494A5 /* Frameworks */,
@@ -890,7 +890,7 @@
 			fileSystemSynchronizedGroups = (
 				17945C802DFDB14C00BCD397 /* ChannelWebhooks */,
 			);
-			name = Revolt;
+			name = Stoat;
 			packageProductDependencies = (
 				DA99EC5229D6148200419FDA /* Alamofire */,
 				DAAA4BF329F2274A00F41E52 /* Collections */,
@@ -918,7 +918,7 @@
 				177A6B2C2D472D7E0052B031 /* LiveKitComponents */,
 			);
 			productName = Revolt;
-			productReference = D49B704F29C4D3FE009494A5 /* Revolt.app */;
+			productReference = D49B704F29C4D3FE009494A5 /* Stoat.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -983,7 +983,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D49B704E29C4D3FE009494A5 /* Revolt */,
+				D49B704E29C4D3FE009494A5 /* Stoat */,
 				17DE7DB12BFAEC3F00C99188 /* Types */,
 				175465C92C42147B0076B393 /* NotificationService */,
 			);
@@ -1687,7 +1687,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D49B707329C4D3FE009494A5 /* Build configuration list for PBXNativeTarget "Revolt" */ = {
+		D49B707329C4D3FE009494A5 /* Build configuration list for PBXNativeTarget "Stoat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D49B707429C4D3FE009494A5 /* Debug */,
