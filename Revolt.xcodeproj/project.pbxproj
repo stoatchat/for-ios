@@ -153,6 +153,7 @@
 		17F8FBCA2D8CC019006EAD0A /* Zoomable in Frameworks */ = {isa = PBXBuildFile; productRef = 17F8FBC92D8CC019006EAD0A /* Zoomable */; };
 		17F9D7632C9208B500D0BB6F /* MessageReactionsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F9D7622C9208B500D0BB6F /* MessageReactionsSheet.swift */; };
 		36D461CF77D84B97B94929A9 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 03268FCCFC7D4D1F8B6E9F6F /* Sentry */; };
+		502A6AD02F4049A1003BBC7B /* Stoat.icon in Resources */ = {isa = PBXBuildFile; fileRef = 502A6ACF2F4049A1003BBC7B /* Stoat.icon */; };
 		D49B705329C4D3FE009494A5 /* RevoltApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49B705229C4D3FE009494A5 /* RevoltApp.swift */; };
 		D49B705729C4D3FE009494A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D49B705629C4D3FE009494A5 /* Assets.xcassets */; };
 		D49B705A29C4D3FE009494A5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D49B705929C4D3FE009494A5 /* Preview Assets.xcassets */; };
@@ -350,6 +351,7 @@
 		17F555262AFC229900958F2F /* ServerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSettings.swift; sourceTree = "<group>"; };
 		17F8B7082C7983730065F1DE /* CreateServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateServer.swift; sourceTree = "<group>"; };
 		17F9D7622C9208B500D0BB6F /* MessageReactionsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionsSheet.swift; sourceTree = "<group>"; };
+		502A6ACF2F4049A1003BBC7B /* Stoat.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Stoat.icon; sourceTree = "<group>"; };
 		D49B704F29C4D3FE009494A5 /* Stoat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stoat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D49B705229C4D3FE009494A5 /* RevoltApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevoltApp.swift; sourceTree = "<group>"; };
 		D49B705629C4D3FE009494A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -453,6 +455,7 @@
 				1701E08B2C4C395900DD970F /* emoji_15_1_ordering.json */,
 				D49B705629C4D3FE009494A5 /* Assets.xcassets */,
 				D49B705829C4D3FE009494A5 /* Preview Content */,
+				502A6ACF2F4049A1003BBC7B /* Stoat.icon */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1009,6 +1012,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				502A6AD02F4049A1003BBC7B /* Stoat.icon in Resources */,
 				D49B705A29C4D3FE009494A5 /* Preview Assets.xcassets in Resources */,
 				D49B705729C4D3FE009494A5 /* Assets.xcassets in Resources */,
 				1701E08C2C4C395900DD970F /* emoji_15_1_ordering.json in Resources */,
@@ -1536,7 +1540,7 @@
 		D49B707429C4D3FE009494A5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = default;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Stoat;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_USE_OPTIMIZATION_PROFILE = NO;
@@ -1598,7 +1602,7 @@
 		D49B707529C4D3FE009494A5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = default;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Stoat;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_OPTIMIZATION_PROFILE_FILE = "";
