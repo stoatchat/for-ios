@@ -33,7 +33,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 #### Installation
 
 1. **Clone the repository:** \
-   `git clone https://github.com/revoltchat/ios.git`
+   `git clone https://github.com/stoatchat/for-ios`
 
 2. **Open the project in Xcode:** \
    Open `Revolt.xcworkspace` in Xcode.
@@ -43,4 +43,4 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 ## License
 
-All content contained within this repository is licensed under the [GNU Affero General Public License v3.0](https://github.com/revoltchat/ios/blob/main/LICENSE). Dependencies may be licensed differently._
+All content contained within this repository is licensed under the [GNU Affero General Public License v3.0](https://github.com/stoatchat/for-ios/blob/main/LICENSE). Dependencies may be licensed differently._
