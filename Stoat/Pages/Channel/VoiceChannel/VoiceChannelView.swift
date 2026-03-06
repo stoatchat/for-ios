@@ -36,7 +36,8 @@ struct TokenResponse: Decodable {
 
 struct VoiceChannelView: View {
     @EnvironmentObject var viewState: ViewState
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     var channel: Channel
     var server: Server?
     
@@ -243,7 +244,7 @@ struct VoiceChannelView: View {
                         .frame(maxWidth: .infinity)
                         
                         Button {
-                            withAnimation {
+                            withAnimation(reduceMotion ? nil : .default) {
                                 viewState.currentChannel = .force_textchannel(channel.id)
                             }
                         } label: {

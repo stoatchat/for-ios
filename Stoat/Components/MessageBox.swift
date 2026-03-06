@@ -19,6 +19,7 @@ struct Reply: Identifiable, Equatable {
 
 struct ReplyView: View {
     @EnvironmentObject var viewState: ViewState
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     
     @Binding var reply: Reply
     
@@ -28,7 +29,7 @@ struct ReplyView: View {
     var server: Server?
 
     func remove() {
-        withAnimation {
+        withAnimation(reduceMotion ? nil : .default) {
             replies.removeAll(where: { $0.id == reply.id })
         }
     }
@@ -80,6 +81,7 @@ struct ReplyView: View {
 }
 
 struct MessageBox: View {
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     enum AutocompleteType {
         case usersAndRoles
         case channel
@@ -356,7 +358,7 @@ struct MessageBox: View {
                                                         value = "@online"
                                                 }
                                                 
-                                                withAnimation {
+                                                withAnimation(reduceMotion ? nil : .default) {
                                                     content = String(content.dropLast(autocompleteSearchValue.count + 1))
                                                     content.append("\(value) ")
                                                     autoCompleteType = nil
@@ -385,7 +387,7 @@ struct MessageBox: View {
                                     case .channels(let channels):
                                         ForEach(channels) { channel in
                                             Button {
-                                                withAnimation {
+                                                withAnimation(reduceMotion ? nil : .default) {
                                                     content = String(content.dropLast(autocompleteSearchValue.count + 1))
                                                     content.append("<#\(channel.id)> ")
                                                     autoCompleteType = nil
@@ -408,7 +410,7 @@ struct MessageBox: View {
                                                     emojiString = String(String.UnicodeScalarView(emoji.base.compactMap(Unicode.Scalar.init)))
                                                 }
                                                 
-                                                withAnimation {
+                                                withAnimation(reduceMotion ? nil : .default) {
                                                     content = String(content.dropLast(autocompleteSearchValue.count + 1))
                                                     content.append(emojiString)
                                                     autoCompleteType = nil
@@ -489,7 +491,7 @@ struct MessageBox: View {
                                 .foregroundStyle(viewState.theme.foreground2.color)
                         }
                         .onChange(of: content) { _, value in
-                            withAnimation {
+                            withAnimation(reduceMotion ? nil : .default) {
                                 if let last = value.split(separator: " ").last {
                                     let pre = last.first
                                     autocompleteSearchValue = String(last[last.index(last.startIndex, offsetBy: 1)...])
@@ -511,14 +513,14 @@ struct MessageBox: View {
                         }
                         .onChange(of: focusState.wrappedValue, { _, v in
                             if v, showingSelectEmoji {
-                                withAnimation {
+                                withAnimation(reduceMotion ? nil : .default) {
                                     showingSelectEmoji = false
                                 }
                             }
                         })
                         .onChange(of: showingSelectEmoji, { b, a in
                             if b, !a {
-                                withAnimation {
+                                withAnimation(reduceMotion ? nil : .default) {
                                     focusState.wrappedValue = true
                                 }
                             }
@@ -552,7 +554,7 @@ struct MessageBox: View {
 
                     Group {
                         Button {
-                            withAnimation {
+                            withAnimation(reduceMotion ? nil : .default) {
                                 focusState.wrappedValue = false
                                 showingSelectEmoji.toggle()
                             }

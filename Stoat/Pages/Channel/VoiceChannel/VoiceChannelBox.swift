@@ -9,7 +9,7 @@ import SwiftUI
 
 struct VoiceChannelBox<Title: View, Contents: View, Trailing: View, Overlay: View>: View {
     @EnvironmentObject var viewState: ViewState
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     var title: Title
     var contents: Contents
     var trailing: Trailing?
@@ -25,6 +25,7 @@ struct VoiceChannelBox<Title: View, Contents: View, Trailing: View, Overlay: Vie
     }
     
     var body: some View {
+        
         ZStack(alignment: .bottom) {
             HStack(alignment: .center) {
                 Spacer()
@@ -59,7 +60,7 @@ struct VoiceChannelBox<Title: View, Contents: View, Trailing: View, Overlay: Vie
         .padding(8)
         .background(viewState.theme.background2)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .onTapGesture { withAnimation { selected.toggle() } }
+        .onTapGesture { withAnimation(reduceMotion ? nil : .default) { selected.toggle() } }
     }
 }
 

@@ -12,7 +12,8 @@ import Types
 struct BotSetting: View {
     @EnvironmentObject var viewState: ViewState
     @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     struct Values: Equatable {
         var bot: Bot
         var user: User
@@ -28,12 +29,12 @@ struct BotSetting: View {
     @State var showResetBotTokenDialog: Bool = false
     
     func showPopupText(text: String) {
-        withAnimation(.snappy) {
+        withAnimation(reduceMotion ? nil : .snappy) {
             alertPopupText = text
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            withAnimation(.snappy) {
+            withAnimation(reduceMotion ? nil : .snappy) {
                 alertPopupText = nil
             }
         }

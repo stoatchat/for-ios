@@ -13,9 +13,10 @@ import SwipeActions
 struct ChannelScrollController {
     var proxy: ScrollViewProxy?
     @Binding var highlighted: String?
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     func scrollTo(message id: String) {
-        withAnimation(.easeInOut) {
+        withAnimation(reduceMotion ? nil : .easeInOut) {
             proxy?.scrollTo(id)
             highlighted = id
         }
@@ -23,7 +24,7 @@ struct ChannelScrollController {
         Task {
             try! await Task.sleep(for: .seconds(2))
             
-            withAnimation(.easeInOut) {
+            withAnimation(reduceMotion ? nil : .easeInOut) {
                 highlighted = nil
             }
         }
@@ -101,7 +102,8 @@ class MessageableChannelViewModel: ObservableObject {
 struct MessageableChannelView: View {
     @EnvironmentObject var viewState: ViewState
     @ObservedObject var viewModel: MessageableChannelViewModel
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     @State var over18: Bool = false
     @State var showDetails: Bool = false
     @State var showingSelectEmoji = false
@@ -409,7 +411,7 @@ struct MessageableChannelView: View {
                                 .scrollDismissesKeyboard(.immediately)
                                 
                                 Button {
-                                    withAnimation {
+                                    withAnimation (reduceMotion ? nil : .default) {
                                         if let last = messages.last {
                                             proxy.scrollTo(last.ids)
                                         }
@@ -427,7 +429,7 @@ struct MessageableChannelView: View {
                             }
                         }
                         .onScrollTargetVisibilityChange(idType: [String].self) { ids in
-                            withAnimation {
+                            withAnimation (reduceMotion ? nil : .default) {
                                 if let lastMessages = messages.last, Set(arrayLiteral: lastMessages.ids).isDisjoint(with: Set(ids)) {
                                     nearBottom = false
                                 } else {
@@ -712,6 +714,6 @@ struct MessageWrapper<C: View>: View {
     @Previewable @StateObject var viewState = ViewState.preview()
     let messages = Binding($viewState.channelMessages["0"])!
     
-    return MessageableChannelView(viewModel: .init(viewState: viewState, channel: viewState.channels["0"]!, server: viewState.servers[""], messages: messages), toggleSidebar: {}, disableScroll: .constant(false), disableSidebar: .constant(false))
+    return MessageableChannelView(viewModel: .init(viewState: viewState, channel: viewState.channels["0"]!, server: viewState.servers["0"], messages: messages), toggleSidebar: {}, disableScroll: .constant(false), disableSidebar: .constant(false))
         .applyPreviewModifiers(withState: viewState)
 }

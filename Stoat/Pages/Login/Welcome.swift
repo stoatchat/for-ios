@@ -14,6 +14,7 @@ struct Welcome: View {
     @State private var mfaTicket = ""
     @State private var mfaMethods: [String] = []
     @Binding var wasSignedOut: Bool
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
 
     @Environment(\.colorScheme) var colorScheme: ColorScheme
 
@@ -35,7 +36,7 @@ struct Welcome: View {
                     .transition(.slideTop)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: {
-                            withAnimation {
+                            withAnimation (reduceMotion ? nil : .default) {
                                 wasSignedOut = false
                             }
                         })

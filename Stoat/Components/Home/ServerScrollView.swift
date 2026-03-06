@@ -13,7 +13,7 @@ struct ServerScrollView: View {
     let viewWidth = 60.0
     
     @EnvironmentObject var viewState: ViewState
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @State var showAddServerSheet = false
     
     var body: some View {
@@ -24,7 +24,7 @@ struct ServerScrollView: View {
                 Section {
                     ForEach(viewState.servers.elements, id: \.key) { elem in
                         Button {
-                            withAnimation {
+                            withAnimation(reduceMotion ? nil : Animation.default) {
                                 viewState.selectServer(withId: elem.key)
                             }
                         } label: {

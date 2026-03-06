@@ -17,7 +17,16 @@ let log = Logger(subsystem: "app.revolt.chat", category: "UserSettingsViews")
 func generateTOTPUrl(secret: String, email: String) -> String {
     return "otpauth://totp/Stoat:\(email)?secret=\(secret)&issuer=Stoat"
 }
-
+func withOptionalAnimation<Result>(
+    _ animation: Animation? = .default,
+    _ body: () throws -> Result
+) rethrows -> Result {
+    if UIAccessibility.isReduceMotionEnabled {
+        return try body()
+    } else {
+        return try withOptionalAnimation(animation, body)
+    }
+}
 
 /// Takes a callback that receives either the totp code or the recovery code (in that argument order).
 /// Wont be called if neither are found.
@@ -54,19 +63,19 @@ fileprivate struct CreateMFATicketView: View {
     var doneCallback: (MFATicketResponse) -> ()
     
     func setBadField() {
-        withAnimation {
+        withOptionalAnimation {
             fieldIsIncorrect = true
         }
         
         fieldShake = true
-        withAnimation(Animation.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
+        withOptionalAnimation(Animation.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
             fieldShake = false
         }
     }
     
     func submitForTicket() async {
         if fieldIsIncorrect {
-            withAnimation {
+            withOptionalAnimation {
                 fieldIsIncorrect = false
             }
         }
@@ -130,7 +139,7 @@ fileprivate struct CreateMFATicketView: View {
                     .offset(x: fieldShake ? 30 : 0)
                     .onChange(of: fieldValue) { _, _ in
                         if fieldIsIncorrect {
-                            withAnimation {
+                            withOptionalAnimation {
                                 fieldIsIncorrect = false
                             }
                         }
@@ -148,7 +157,7 @@ fileprivate struct CreateMFATicketView: View {
                 #endif
                     .onChange(of: fieldValue) { _, _ in
                         if fieldIsIncorrect {
-                            withAnimation {
+                            withOptionalAnimation {
                                 fieldIsIncorrect = false
                             }
                         }
@@ -181,6 +190,7 @@ fileprivate struct CreateMFATicketView: View {
 
 fileprivate struct AddTOTPSheet: View {
     private enum Phase { case Password, Code, Verify, FatalError}
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @EnvironmentObject var viewState: ViewState
     @State private var currentPhase: Phase = .Password
     @Binding var showSheet: Bool
@@ -194,12 +204,12 @@ fileprivate struct AddTOTPSheet: View {
     @State var secret: String? = nil
     
     func setBadField() {
-        withAnimation {
+        withOptionalAnimation {
             fieldIsIncorrect = true
         }
         
         fieldShake = true
-        withAnimation(Animation.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
+        withOptionalAnimation(Animation.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
             fieldShake = false
         }
     }
@@ -212,12 +222,12 @@ fileprivate struct AddTOTPSheet: View {
             let secretModel = try secretResp.get()
             secret = secretModel.secret
             
-            withAnimation {
+            withOptionalAnimation {
                 currentPhase = .Code
             }
         } catch {
             log.error("Errored out attempting to receive TOTP secret: \(error.localizedDescription)")
-            withAnimation {
+            withOptionalAnimation {
                 currentPhase = .FatalError
             }
         }
@@ -225,7 +235,7 @@ fileprivate struct AddTOTPSheet: View {
     
     func finalize() async {
         if fieldIsIncorrect {
-            withAnimation {
+            withOptionalAnimation {
                 fieldIsIncorrect = false
             }
         }
@@ -281,7 +291,7 @@ fileprivate struct AddTOTPSheet: View {
                 Spacer()
                     .frame(maxHeight: 10)
                 Button(action: {
-                    withAnimation {
+                    withOptionalAnimation {
                         currentPhase = .Verify
                     }
                 }) {
@@ -311,7 +321,7 @@ fileprivate struct AddTOTPSheet: View {
             }
         }
         .padding()
-        .transition(.slide)
+        .transition(reduceMotion ? .identity : .slide)
     }
 }
 
@@ -330,7 +340,7 @@ fileprivate struct RemoveTOTPSheet: View {
                 let error = error as! RevoltError
                 SentrySDK.capture(error: error)
                 
-                withAnimation {
+                withOptionalAnimation {
                     errorOccurred = true
                 }
             }
@@ -352,6 +362,7 @@ fileprivate struct RemoveTOTPSheet: View {
 }
 
 fileprivate struct GenerateRecoveryCodesSheet: View {
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @EnvironmentObject var viewState: ViewState
     @Binding var showSheet: Bool
     @Binding var sheetIsNotDismissable: Bool
@@ -366,14 +377,14 @@ fileprivate struct GenerateRecoveryCodesSheet: View {
                 let _codes = try await viewState.http.generateRecoveryCodes(mfaToken: ticket.token).get()
                 
                 sheetIsNotDismissable = true
-                withAnimation {
+                withOptionalAnimation {
                     codes = _codes
                 }
             } catch {
                 let error = error as! RevoltError
                 SentrySDK.capture(error: error)
                 
-                withAnimation {
+                withOptionalAnimation {
                     errorOccurred = true
                 }
             }
@@ -385,7 +396,7 @@ fileprivate struct GenerateRecoveryCodesSheet: View {
         VStack {
             if codes.isEmpty {
                 CreateMFATicketView(requestTicketType: .Password, doneCallback: generateCodes)
-                    .transition(.slideNext)
+                    .transition(reduceMotion ? .identity : .slideNext)
             } else {
                 VStack {
                     ForEach(0 ..< codes.count, id: \.self) { value in
@@ -401,13 +412,13 @@ fileprivate struct GenerateRecoveryCodesSheet: View {
                         let content = codes.joined(separator: "\n")
                         UIPasteboard.general.setValue(content, forPasteboardType: UTType.plainText.identifier)
                         
-                        withAnimation {
+                        withOptionalAnimation {
                             copyButtonText = String(localized: "Copied!")
                             isCopyDisabled = true
                         }
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 4, execute: {
-                            withAnimation {
+                            withOptionalAnimation {
                                 copyButtonText = String(localized: "Copy to clipboard")
                                 isCopyDisabled = false
                             }
@@ -435,7 +446,7 @@ fileprivate struct GenerateRecoveryCodesSheet: View {
                 }
                 .backgroundStyle(viewState.theme.background2)
                 .padding()
-                .transition(.slideNext)
+                .transition(reduceMotion ? .identity : .slideNext)
             }
             if errorOccurred {
                 Spacer()
@@ -474,7 +485,7 @@ fileprivate struct UsernameUpdateSheet: View {
             showSheet = false
         } catch {
             // TODO: better error messages
-            withAnimation {
+            withOptionalAnimation {
                 errorOccurred = true
             }
         }
@@ -571,7 +582,7 @@ fileprivate struct PasswordUpdateSheet: View {
             showSheet = false
         } catch {
             // TODO: better error messages
-            withAnimation {
+            withOptionalAnimation {
                 errorOccurred = true
             }
         }
@@ -646,6 +657,7 @@ fileprivate struct PasswordUpdateSheet: View {
 }
 
 fileprivate struct DisableAccountSheet: View {
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @EnvironmentObject var viewState: ViewState
     @Binding var showSheet: Bool
     @State var ticket: MFATicketResponse? = nil
@@ -653,7 +665,7 @@ fileprivate struct DisableAccountSheet: View {
     @State var presentConfirmationDialog = false
     
     func receiveTicket(ticket: MFATicketResponse) {
-        withAnimation {
+        withOptionalAnimation {
             self.ticket = ticket
         }
     }
@@ -665,7 +677,7 @@ fileprivate struct DisableAccountSheet: View {
             } catch {
                 SentrySDK.capture(error: error)
                 
-                withAnimation {
+                withOptionalAnimation {
                     errorOccurred = true
                 }
                 return
@@ -674,7 +686,7 @@ fileprivate struct DisableAccountSheet: View {
             viewState.ws?.stop()
             showSheet = false
 
-            withAnimation {
+            withOptionalAnimation {
                 viewState.state = .signedOut
             }
         }
@@ -683,7 +695,7 @@ fileprivate struct DisableAccountSheet: View {
     var body: some View {
         if ticket == nil {
             CreateMFATicketView(requestTicketType: .Password, doneCallback: receiveTicket)
-                .transition(.slideNext)
+                .transition(reduceMotion ? .identity : .slideNext)
         } else {
             VStack {
                 Text("Wait a minute!")
@@ -729,8 +741,8 @@ fileprivate struct DisableAccountSheet: View {
                     deactivateAccount()
                 }
             }
-            .transition(.slideNext)
-            
+            .transition(reduceMotion ? .identity : .slideNext)
+
             if errorOccurred {
                 Spacer()
                     .frame(maxHeight: 10)
@@ -743,6 +755,7 @@ fileprivate struct DisableAccountSheet: View {
 
 
 fileprivate struct DeleteAccountSheet: View {
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @EnvironmentObject var viewState: ViewState
     @Binding var showSheet: Bool
     @State var ticket: MFATicketResponse? = nil
@@ -750,7 +763,7 @@ fileprivate struct DeleteAccountSheet: View {
     @State var presentConfirmationDialog = false
     
     func receiveTicket(ticket: MFATicketResponse) {
-        withAnimation {
+        withOptionalAnimation {
             self.ticket = ticket
         }
     }
@@ -762,7 +775,7 @@ fileprivate struct DeleteAccountSheet: View {
             } catch {
                 SentrySDK.capture(error: error)
                 
-                withAnimation {
+                withOptionalAnimation {
                     errorOccurred = true
                 }
                 return
@@ -771,7 +784,7 @@ fileprivate struct DeleteAccountSheet: View {
             viewState.ws?.stop()
             showSheet = false
 
-            withAnimation {
+            withOptionalAnimation {
                 viewState.state = .signedOut
             }
         }
@@ -780,7 +793,7 @@ fileprivate struct DeleteAccountSheet: View {
     var body: some View {
         if ticket == nil {
             CreateMFATicketView(requestTicketType: .Password, doneCallback: receiveTicket)
-                .transition(.slideNext)
+                .transition(reduceMotion ? .identity : .slideNext)
         } else {
             VStack {
                 Text("Stop right there!")
@@ -826,8 +839,8 @@ fileprivate struct DeleteAccountSheet: View {
                     deleteAccount()
                 }
             }
-            .transition(.slideNext)
-            
+            .transition(reduceMotion ? .identity : .slideNext)
+
             if errorOccurred {
                 Spacer()
                     .frame(maxHeight: 10)
@@ -1046,3 +1059,7 @@ struct UserSettings: View {
     }
 }
 
+#Preview {
+    @Previewable @StateObject var state = ViewState.preview().applySystemScheme(theme: .dark)
+    UserSettings().environmentObject(state)
+}
