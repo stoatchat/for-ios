@@ -127,6 +127,13 @@ struct UserMaybeMember: Identifiable {
     var id: String { user.id }
 }
 
+struct RoleSheetData: Identifiable, Equatable {
+    var role: Role
+    var serverId: String
+
+    var id: String { "\(serverId):\(role.id)" }
+}
+
 @MainActor
 public class ViewState: ObservableObject {
     static var shared: ViewState? = nil
@@ -251,6 +258,7 @@ public class ViewState: ObservableObject {
     @Published var isOnboarding: Bool = false
     @Published var unreads: [String: Unread] = [:]
     @Published var currentUserSheet: UserMaybeMember? = nil
+    @Published var currentRoleSheet: RoleSheetData? = nil
     @Published var currentVoiceChannel: String? = nil
     @Published var currentVoice: Room? = nil
     @Published var atTopOfChannel: Set<String> = []
@@ -1283,6 +1291,10 @@ public class ViewState: ObservableObject {
     
     func openUserSheet(user: Types.User, member: Member? = nil) {
         currentUserSheet = UserMaybeMember(user: user, member: member)
+    }
+
+    func openRoleSheet(role: Role, serverId: String) {
+        currentRoleSheet = RoleSheetData(role: role, serverId: serverId)
     }
     
     public var openServer: Server? {

@@ -878,15 +878,50 @@ class EmojiView: UIView {
     }
 }
 
+class RoleMentionView: UIView {
+    var nameView: UILabel!
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        createSubViews()
+    }
+
+    init() {
+        super.init(frame: .zero)
+        createSubViews()
+    }
+
+    private func createSubViews() {
+        self.nameView = UILabel()
+        self.nameView.numberOfLines = 1
+
+        addSubview(nameView)
+
+        nameView.snp.makeConstraints { make in
+            make.leading.equalTo(self.snp.leading).offset(6)
+            make.trailing.equalTo(self.snp.trailing).offset(-6)
+            make.centerY.equalTo(self.snp.centerY)
+        }
+
+        self.snp.makeConstraints { make in
+            make.height.equalTo(nameView.snp.height)
+        }
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class UserMentionView: UIView {
     var imageView: UIImageView!
     var nameView: UILabel!
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         createSubViews(imageHeight: frame.height)
     }
-    
+
     init(imageHeight: CGFloat) {
         super.init(frame: .zero)
         createSubViews(imageHeight: imageHeight)
@@ -1040,13 +1075,58 @@ let defaultParagraphStyle: NSParagraphStyle = {
 
 class UserMentionTapHandler: NSObject {
     let callback: () -> Void
-    
+
     init(callback: @escaping () -> Void) {
         self.callback = callback
     }
-    
+
     @objc func handle(_: UITapGestureRecognizer) {
         callback()
+    }
+}
+
+class RoleMentionTapHandler: NSObject {
+    let callback: () -> Void
+
+    init(callback: @escaping () -> Void) {
+        self.callback = callback
+    }
+
+    @objc func handle(_: UITapGestureRecognizer) {
+        callback()
+    }
+}
+
+final class TappableViewAttachmentProvider: NSObject, TextAttachedViewProvider {
+    let view: UIView
+
+    init(view: UIView) {
+        self.view = view
+        super.init()
+    }
+
+    func instantiateView(for attachment: SubviewTextAttachment, in behavior: SubviewAttachingTextViewBehavior) -> UIView {
+        return self.view
+    }
+
+    func bounds(for attachment: SubviewTextAttachment, textContainer: NSTextContainer?, proposedLineFragment lineFrag: CGRect, glyphPosition position: CGPoint) -> CGRect {
+        return attachment.bounds
+    }
+}
+
+final class TappableSubviewTextAttachment: SubviewTextAttachment {
+    let onTap: () -> Void
+
+    init(view: UIView, onTap: @escaping () -> Void) {
+        self.onTap = onTap
+        super.init(viewProvider: TappableViewAttachmentProvider(view: view))
+        let fitting = view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        let size = (fitting.width > 1e-3 && fitting.height > 1e-3) ? fitting : view.bounds.size
+        self.bounds = CGRect(origin: .zero, size: size)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -1060,7 +1140,6 @@ struct InnerContents: UIViewRepresentable {
     
     @Binding var content: String
     
-    @State var handlers: [UserMentionTapHandler] = []
         
     var fontSize: CGFloat
     var contentFont: UIFont
@@ -1110,7 +1189,51 @@ struct InnerContents: UIViewRepresentable {
         textview.textContainerInset = .zero
         textview.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
+        let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
+        tap.delegate = context.coordinator
+        tap.cancelsTouchesInView = false
+        textview.addGestureRecognizer(tap)
+
         return textview
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
+            guard let textview = recognizer.view as? UITextView else { return }
+
+            let point = recognizer.location(in: textview)
+            let textLocation = textview.convertPointToTextContainer(point)
+            let layoutManager = textview.layoutManager
+
+            guard textview.textStorage.length > 0 else { return }
+
+            let charIndex = layoutManager.characterIndex(
+                for: textLocation,
+                in: textview.textContainer,
+                fractionOfDistanceBetweenInsertionPoints: nil
+            )
+
+            guard charIndex >= 0, charIndex < textview.textStorage.length else { return }
+
+            if let attachment = textview.textStorage.attribute(
+                .attachment,
+                at: charIndex,
+                effectiveRange: nil
+            ) as? TappableSubviewTextAttachment {
+                attachment.onTap()
+            }
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            return true
+        }
     }
     
     func fixAttributedStringStyling(for string: NSMutableAttributedString) {
@@ -1134,10 +1257,6 @@ struct InnerContents: UIViewRepresentable {
     }
     
     func updateUIView(_ textview: UIViewType, context: Context) {
-        DispatchQueue.main.async {
-            handlers.removeAll()
-        }
-        
         let attrString = try! NSMutableAttributedString(markdown: content.data(using: .utf8)!, options: .init(allowsExtendedAttributes: true, interpretedSyntax: .full, failurePolicy: .returnPartiallyParsedIfPossible))
         
         fixAttributedStringStyling(for: attrString)
@@ -1292,20 +1411,47 @@ struct InnerContents: UIViewRepresentable {
         
         for match in attrString.string.matches(of: /<%(\w{26})>/).reversed() {
             let id = match.output.1
-            
-            if let role = currentServer?.roles?[String(id)] {
+
+            if let server = currentServer, let role = server.roles?[String(id)] {
                 let lowerInt = match.range.lowerBound.utf16Offset(in: attrString.string)
                 let lower = match.range.lowerBound
                 let upper = match.range.upperBound
-                
+
                 let globalRange = Range(uncheckedBounds: (lower, upper))
-                
-                var currentAttrs = attrString.attributes(at: lowerInt, effectiveRange: nil)
-                
-                currentAttrs[.foregroundColor] = viewState.theme.accent.uiColor  // TODO: somehow do the role colour - current parser emmits swiftui colours
-                
+
+                let currentAttrs = attrString.attributes(at: lowerInt, effectiveRange: nil)
+                let currentFont = (currentAttrs[.font] ?? contentFont) as! UIFont
+
                 attrString.deleteCharacters(in: NSRange(globalRange, in: attrString.string))
-                attrString.insert(NSAttributedString(string: "@\(role.name)", attributes: currentAttrs), at: lowerInt)
+
+                let view = RoleMentionView()
+                view.backgroundColor = viewState.theme.background2.uiColor
+                view.layer.cornerRadius = currentFont.pointSize / 2
+
+                view.nameView.text = "@\(role.name)"
+                view.nameView.font = .boldSystemFont(ofSize: currentFont.pointSize)
+                let color: UIColor
+                if let roleColorHex = role.colour {
+                    let (r, g, b, a) = parseHex(hex: roleColorHex)
+                    color = UIColor(
+                        red: r,
+                        green: g,
+                        blue: b,
+                        alpha: a
+                    )
+                } else {
+                    color = viewState.theme.accent.uiColor
+                }
+                view.nameView.textColor = color
+
+                let serverId = server.id
+                let attachment = TappableSubviewTextAttachment(view: view) {
+                    viewState.openRoleSheet(role: role, serverId: serverId)
+                }
+
+                textview.addSubview(view)
+
+                attrString.insert(NSAttributedString(attachment: attachment), at: lowerInt)
             }
         }
         
@@ -1340,23 +1486,14 @@ struct InnerContents: UIViewRepresentable {
                                 
                 view.nameView.text = member?.nickname ?? user.display_name ?? user.username
                 view.nameView.font = .boldSystemFont(ofSize: currentFont.pointSize)
-                
-                view.isUserInteractionEnabled = true
-                
-                let handler = UserMentionTapHandler {
+
+                let attachment = TappableSubviewTextAttachment(view: view) {
                     viewState.openUserSheet(user: user, member: member)
                 }
-                
-                DispatchQueue.main.async {
-                    handlers.append(handler)
-                }
-                
-                let recogniser = UITapGestureRecognizer(target: handler, action: #selector(UserMentionTapHandler.handle(_:)))
-                view.addGestureRecognizer(recogniser)
 
                 textview.addSubview(view)
-                
-                attrString.insert(NSAttributedString(attachment: SubviewTextAttachment(view: view)), at: lowerInt)
+
+                attrString.insert(NSAttributedString(attachment: attachment), at: lowerInt)
             }
         }
         

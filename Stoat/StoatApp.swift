@@ -264,6 +264,9 @@ struct MainApp: View {
         .sheet(item: $viewState.currentUserSheet) { (v) in
             UserSheet(user: v.user, member: v.member)
         }
+        .sheet(item: $viewState.currentRoleSheet) { data in
+            RoleSheet(role: data.role, serverId: data.serverId)
+        }
     }
 }
 
