@@ -130,8 +130,9 @@ struct MaybeChannelView: View {
 }
 
 struct Home: View {
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @EnvironmentObject var viewState: ViewState
-    
+
     @Binding var currentSelection: MainSelection
     @Binding var currentChannel: ChannelSelection
     
@@ -146,18 +147,19 @@ struct Home: View {
     let minSnapPercentage: CGFloat = 0.4
     let sidebarWidthPercentage: CGFloat = 0.85
     let minSidebarWidth: CGFloat = 600
-    let animationStyle: Animation = .snappy
+    var animationStyle: Animation? { reduceMotion ? nil : .snappy }
     
     func toggleSidebar() {
+
         withAnimation(animationStyle) {
             if offset != .zero {
                 offset = .zero
             } else {
-                offset = calculatedSize
+                offset = UIScreen.main.bounds.width*sidebarWidthPercentage
             }
         }
     }
-    
+
     var body: some View {
         if isIPad || isMac {
             HStack(spacing: 0) {
@@ -297,7 +299,7 @@ struct Home: View {
 }
 
 #Preview {
-    @StateObject var state = ViewState.preview().applySystemScheme(theme: .dark)
+    @Previewable @StateObject var state = ViewState.preview().applySystemScheme(theme: .dark)
     
     return Home(currentSelection: $state.currentSelection, currentChannel: $state.currentChannel)
             .environmentObject(state)

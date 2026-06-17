@@ -10,11 +10,11 @@ import SwiftUI
 
 struct AlertPopup<C: View, P: View>: View {
     @EnvironmentObject var viewState: ViewState
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     var show: Bool
     var inner: C
     var popup: () -> P
-    
+
     var body: some View {
         inner.overlay {
             if show {
@@ -24,7 +24,7 @@ struct AlertPopup<C: View, P: View>: View {
                     .padding()
                     .padding(.bottom, 38)
                     .shadow(radius: 5)
-                    .transition(.move(edge: .bottom))
+                    .transition(reduceMotion ? .identity : .move(edge: .bottom))
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }
         }

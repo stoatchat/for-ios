@@ -11,6 +11,7 @@ import Types
 
 struct ShareInviteSheet: View {
     @EnvironmentObject var viewState: ViewState
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     
     @State var channel: Channel
     @State var url: URL
@@ -52,12 +53,12 @@ struct ShareInviteSheet: View {
                 Button {
                     copyUrl(url: url)
                     
-                    withAnimation(.snappy) {
+                    withAnimation(reduceMotion ? nil : .snappy) {
                         copiedToClipboard = true
                     }
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        withAnimation(.snappy) {
+                        withAnimation(reduceMotion ? nil : .snappy) {
                             copiedToClipboard = false
                         }
                     }

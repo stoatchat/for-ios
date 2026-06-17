@@ -129,6 +129,8 @@ struct UserMaybeMember: Identifiable {
 
 @MainActor
 public class ViewState: ObservableObject {
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     static var shared: ViewState? = nil
 
 #if os(iOS)
@@ -491,7 +493,7 @@ public class ViewState: ObservableObject {
         guard let status = status else { return .failure(.signOutError)}
         self.ws?.stop()
         
-        withAnimation {
+        withAnimation(reduceMotion ? nil : .default) {
             state = .signedOut
         }
         
@@ -503,7 +505,7 @@ public class ViewState: ObservableObject {
     
     /// A workaround for the UserSettingStore finding out we're not authenticated, since not a main actor.
     func setSignedOutState() {
-        withAnimation {
+        withAnimation(reduceMotion ? nil : .default) {
             state = .signedOut
         }
     }

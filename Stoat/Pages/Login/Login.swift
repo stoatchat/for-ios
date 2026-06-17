@@ -12,7 +12,7 @@ struct LogIn: View {
     @State private var showPassword = false
     @State private var showMfa = false
     @State private var errorMessage: String? = nil
-    
+
     @State private var needsOnboarding = false
 
     @Binding public var mfaTicket: String
@@ -158,6 +158,7 @@ struct LogIn: View {
 
 struct Mfa: View {
     @EnvironmentObject var viewState: ViewState
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
 
     @Binding public var path: NavigationPath
     @Binding var ticket: String
@@ -245,7 +246,7 @@ struct Mfa: View {
                         
                         VStack(alignment: .leading) {
                             Button {
-                                withAnimation {
+                                withAnimation (reduceMotion ? nil : .default) {
                                     if selected == method {
                                         selected = nil
                                         textEntryFocus = nil

@@ -11,7 +11,9 @@ import Types
 struct ResendEmail: View {
     @EnvironmentObject var viewState: ViewState
     @Environment(\.colorScheme) var colorScheme
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+    var animationStyle: Animation? { reduceMotion ? nil : .default }
+
     @State var errorMessage: String? = nil
     @State var email = ""
     
@@ -22,18 +24,18 @@ struct ResendEmail: View {
     @State var goToVerificationPage = false
     
     func preProcessRequest() {
-        withAnimation {
+        withAnimation(animationStyle) {
             errorMessage = nil
         }
         
         if email.isEmpty {
-            withAnimation {
+            withAnimation(animationStyle) {
                 errorMessage = "Enter your email"
             }
             return
         }
         
-        withAnimation {
+        withAnimation(animationStyle) {
             showSpinner = true
         }
     }
@@ -46,7 +48,7 @@ struct ResendEmail: View {
             do {
                 _ = try await viewState.http.createAccount_ResendVerification(email: email, captcha: captchaResult).get()
             } catch {
-                withAnimation {
+                withAnimation(animationStyle) {
                     errorMessage = "Invalid email"
                     showSpinner = false
                     completeSpinner = false

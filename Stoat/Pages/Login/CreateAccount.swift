@@ -15,6 +15,7 @@ struct CreateAccount: View {
         case Username
     }
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @EnvironmentObject var viewState: ViewState
 
     @State private var email = ""
@@ -29,7 +30,7 @@ struct CreateAccount: View {
     @State private var hCaptchaResult: String? = nil
     
     @State var onboardingStage = OnboardingStage.Initial
-    
+    var animationStyle: Animation? { reduceMotion ? nil : .default }
     @FocusState private var focus1: Bool
     @FocusState private var focus2: Bool
     
@@ -187,14 +188,14 @@ struct CreateAccount: View {
                             
                             if onboardingStage == .Initial {
                                 if email.isEmpty || password.isEmpty {
-                                    withAnimation {
+                                    withAnimation (animationStyle){
                                         errorMessage = "Please enter your email and password"
                                     }
                                     return
                                 }
                                 errorMessage = nil
                                 if viewState.apiInfo!.features.captcha.enabled && hCaptchaResult == nil {
-                                    withAnimation {
+                                    withAnimation(animationStyle) {
                                         isWaitingWithSpinner.toggle()
                                     }
                                 } else {
@@ -202,14 +203,14 @@ struct CreateAccount: View {
                                         do {
                                             _ = try await viewState.http.createAccount(email: email, password: password, invite: nil, captcha: hCaptchaResult).get()
                                         } catch {
-                                            withAnimation {
+                                            withAnimation(animationStyle) {
                                                 isSpinnerComplete = false
                                                 isWaitingWithSpinner = false
                                                 errorMessage = "Sorry, your email or password was invalid"
                                             }
                                             return
                                         }
-                                        withAnimation {
+                                        withAnimation(animationStyle) {
                                             isWaitingWithSpinner = false
                                             isSpinnerComplete = false
                                             onboardingStage = .Verify
@@ -219,29 +220,29 @@ struct CreateAccount: View {
                             }
                             else if onboardingStage == .Verify {
                                 if verifyCode.isEmpty {
-                                    withAnimation {
+                                    withAnimation(animationStyle) {
                                         errorMessage = "Please enter the verification code"
                                     }
                                     return
                                 }
                                 errorMessage = nil
-                                withAnimation {
+                                withAnimation (animationStyle){
                                     isWaitingWithSpinner = true
                                 }
                                 Task {
                                     let resp = await viewState.signInWithVerify(code: verifyCode, email: email, password: password)
                                     if !resp {
-                                        withAnimation {
+                                        withAnimation (animationStyle){
                                             isWaitingWithSpinner = false
                                             errorMessage = "Invalid verification code"
                                         }
                                         return
                                     }
-                                    withAnimation {
+                                    withAnimation(animationStyle) {
                                         isSpinnerComplete = true
                                     }
                                     try! await Task.sleep(for: .seconds(2))
-                                    withAnimation {
+                                    withAnimation(animationStyle) {
                                         isWaitingWithSpinner = false
                                         isSpinnerComplete = false
                                         onboardingStage = .Username
@@ -250,26 +251,26 @@ struct CreateAccount: View {
                             }
                             else if onboardingStage == .Username {
                                 if username.isEmpty {
-                                    withAnimation {
+                                    withAnimation (animationStyle){
                                         errorMessage = "Please enter a username"
                                     }
                                     return
                                 }
                                 errorMessage = nil
-                                withAnimation {
+                                withAnimation(animationStyle) {
                                     isWaitingWithSpinner = true
                                 }
                                 Task {
                                     do {
                                         _ = try await viewState.http.completeOnboarding(username: username).get()
                                     } catch {
-                                        withAnimation {
+                                        withAnimation(animationStyle) {
                                             isWaitingWithSpinner = false
                                             errorMessage = "Invalid Username, try something else"
                                         }
                                         return
                                     }
-                                    withAnimation {
+                                    withAnimation(animationStyle) {
                                         isSpinnerComplete = true
                                     }
                                     
@@ -307,7 +308,7 @@ struct CreateAccount: View {
                     #if canImport(UIKit)
                     HCaptchaView(apiKey: viewState.apiInfo!.features.captcha.key, baseURL: viewState.http.baseURL, result: $hCaptchaResult)
                         .onChange(of: hCaptchaResult) {
-                            withAnimation {
+                            withAnimation(animationStyle) {
                                 isWaitingWithSpinner = false
                                 isSpinnerComplete = true
                             }
@@ -315,7 +316,7 @@ struct CreateAccount: View {
                                 do {
                                     _ = try await viewState.http.createAccount(email: email, password: password, invite: nil, captcha: hCaptchaResult).get()
                                 } catch {
-                                    withAnimation {
+                                    withAnimation(animationStyle) {
                                         isSpinnerComplete = false
                                         isWaitingWithSpinner = false
                                         errorMessage = "Sorry, your email or password was invalid"
@@ -323,7 +324,7 @@ struct CreateAccount: View {
                                     return
                                 }
                                 try! await Task.sleep(for: .seconds(2))
-                                withAnimation {
+                                withAnimation(animationStyle) {
                                     isSpinnerComplete = false
                                     if viewState.apiInfo?.features.email == true {
                                         onboardingStage = .Verify

@@ -87,15 +87,16 @@ struct ApplicationSwitcher: View {
     @EnvironmentObject var viewState: ViewState
     @State var wasSignedOut = false
     @State var banner: WsState? = nil
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     var body: some View {
         if viewState.state != .signedOut && !viewState.isOnboarding {
             InnerApp()
-                .transition(.slide)
+                .transition(reduceMotion ? .identity : .slide)
                 .task {
                     await viewState.backgroundWsTask()
                     if viewState.state != .signedOut {
-                        withAnimation {
+                        withAnimation(reduceMotion ? nil : .default) {
                             viewState.state = .connecting
                         }
                     }
@@ -144,7 +145,7 @@ struct ApplicationSwitcher: View {
                 .onChange(of: colorScheme) { before, after in
                     // automatically switch the color scheme if the user pressed "auto" in the preferences menu
                     if viewState.theme.shouldFollowiOSTheme {
-                        withAnimation {
+                        withAnimation(reduceMotion ? nil : .default) {
                             _ = viewState.applySystemScheme(theme: after, followSystem: true)
                         }
                     }
@@ -153,7 +154,7 @@ struct ApplicationSwitcher: View {
                     if case .connected = after {
                         banner = .connected
                         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-                            withAnimation {
+                            withAnimation(reduceMotion ? nil : .default) {
                                 banner = nil
                             }
                         }
@@ -163,12 +164,12 @@ struct ApplicationSwitcher: View {
                 })
         } else {
             Welcome(wasSignedOut: $wasSignedOut)
-                .transition(.slideNext)
+                .transition(reduceMotion ? .identity : .slideNext)
                 .onAppear {
                     if viewState.state == .signedOut && viewState.sessionToken != nil { // signging out
                         viewState.sessionToken = nil
                         viewState.destroyCache()
-                        withAnimation {
+                        withAnimation(reduceMotion ? nil : .default) {
                             wasSignedOut = true
                         }
                     }
@@ -307,4 +308,10 @@ func copyUrl(url: URL) {
 #else
     UIPasteboard.general.url = url
 #endif
+}
+
+#Preview{
+    @Previewable @StateObject var state = ViewState.preview().applySystemScheme(theme: .dark)
+    return MainApp().environmentObject(state)
+    
 }

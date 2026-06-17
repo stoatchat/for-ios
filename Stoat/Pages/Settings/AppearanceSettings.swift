@@ -12,7 +12,8 @@ import SwiftUI
 struct ThemeColorPicker: View {
     @Environment(\.self) var environment
     @EnvironmentObject var viewState: ViewState
-    
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     var title: String
     @Binding var color: ThemeColor
     
@@ -20,7 +21,7 @@ struct ThemeColorPicker: View {
         ColorPicker(selection: Binding {
             color.color
         } set: { new in
-            withAnimation {
+            withAnimation (reduceMotion ? nil : .default){
                 color.set(with: new.resolve(in: environment))
             }
         }, label: {
@@ -33,6 +34,7 @@ struct AppearanceSettings: View {
     @Environment(\.self) var environment
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var viewState: ViewState
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
 
     var body: some View {
         VStack {
@@ -40,7 +42,7 @@ struct AppearanceSettings: View {
                 Spacer()
                 
                 Button {
-                    withAnimation {
+                    withAnimation(reduceMotion ? nil : .default) {
                         viewState.theme = .light
                     }
                 } label: {
@@ -51,7 +53,7 @@ struct AppearanceSettings: View {
                 Spacer()
                 
                 Button {
-                    withAnimation {
+                    withAnimation(reduceMotion ? nil : .default) {
                         viewState.theme = .dark
                     }
                 } label: {
@@ -62,7 +64,7 @@ struct AppearanceSettings: View {
                 Spacer()
                 
                 Button {
-                    withAnimation {
+                    withAnimation(reduceMotion ? nil : .default) {
                         let _ = viewState.applySystemScheme(theme: colorScheme, followSystem: true)
                     }
                 } label: {
@@ -90,13 +92,13 @@ struct AppearanceSettings: View {
                     ThemeColorPicker(title: "Mention", color: $viewState.theme.mention)
                 }
                 .listRowBackground(viewState.theme.background2)
-                .animation(.easeInOut, value: viewState.theme)
+                .animation(reduceMotion ? nil : .easeInOut, value: viewState.theme)
 
                 
                 Section("Messages") {
                     CheckboxListItem(title: "Compact Mode", isOn: Binding(get: { false }, set: {_ in }))
                         .listRowBackground(viewState.theme.background2)
-                        .animation(.easeInOut, value: viewState.theme)
+                        .animation(reduceMotion ? nil : .easeInOut, value: viewState.theme)
                 }
                 
             }
@@ -109,7 +111,7 @@ struct AppearanceSettings: View {
         }
         .background(viewState.theme.background)
         .toolbarBackground(viewState.theme.topBar, for: .automatic)
-        .animation(.easeInOut, value: viewState.theme)
+        .animation(reduceMotion ? nil : .easeInOut, value: viewState.theme)
     }
 }
 
