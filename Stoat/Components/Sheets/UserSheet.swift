@@ -92,9 +92,7 @@ struct UserSheet: View {
                     {
                         Tile("Roles") {
                             ScrollView {
-                                ForEach(roles, id: \.self) { roleId in
-                                    let role = server.roles![roleId]!
-                                    
+                                ForEach(roles.compactMap { server.roles?[$0] }, id: \.id) { role in
                                     HStack {
                                         Text(role.name)
                                         
@@ -112,7 +110,7 @@ struct UserSheet: View {
                     Tile("Joined") { 
                         VStack(alignment: .leading) {
                             Text(createdAt(id: user.id), style: .date)
-                            Text("Revolt")
+                            Text("Stoat")
                                 .bold()
                         }
                         //.frame(maxWidth: .infinity)
