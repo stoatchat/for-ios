@@ -89,27 +89,29 @@ struct InstanceSelector: View {
     private func connect(to raw: String) async {
         let url = normalize(raw)
         guard URL(string: url) != nil else {
-            errorMessage = "This is not a valis URL."
+            errorMessage = "This is not a valid URL."
             return
         }
         
         isChecking = true
         errorMessage = nil
         
-        let client = HTTPClient(token: nil, baseURL: url)
-        
-        switch await client.fetchApiInfo() {
-        case .success(let info):
-            viewState.apiUrl = url
-            viewState.http = HTTPClient(token: nil, baseURL: url)
-            viewState.http.apiInfo = info
-            viewState.apiInfo = info
-            isChecking = false
-            dismiss()
-        case .failure:
-            isChecking = false
-            errorMessage = "Could not reach a compatible server at \(url)."
+        for candidate in [url, url + "/api"] {
+            let client = HTTPClient(token: nil, baseURL: candidate)
+            
+            if case .success(let info) = await client.fetchApiInfo() {
+                viewState.apiUrl = candidate
+                viewState.http = HTTPClient(token: nil, baseURL: candidate)
+                viewState.http.apiInfo = info
+                viewState.apiInfo = info
+                isChecking = false
+                dismiss()
+                return
+            }
         }
+                
+        isChecking = false
+        errorMessage = "Could not reach a compatible server at \(url)"
     }
 }
 
