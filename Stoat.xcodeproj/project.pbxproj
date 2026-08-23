@@ -153,6 +153,7 @@
 		17F8FBCA2D8CC019006EAD0A /* Zoomable in Frameworks */ = {isa = PBXBuildFile; productRef = 17F8FBC92D8CC019006EAD0A /* Zoomable */; };
 		17F9D7632C9208B500D0BB6F /* MessageReactionsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F9D7622C9208B500D0BB6F /* MessageReactionsSheet.swift */; };
 		36D461CF77D84B97B94929A9 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 03268FCCFC7D4D1F8B6E9F6F /* Sentry */; };
+		A0AE006C303B6E5C004B7BA4 /* InstanceSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AE006B303B6E5C004B7BA4 /* InstanceSelector.swift */; };
 		D49B705329C4D3FE009494A5 /* StoatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49B705229C4D3FE009494A5 /* StoatApp.swift */; };
 		D49B705729C4D3FE009494A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D49B705629C4D3FE009494A5 /* Assets.xcassets */; };
 		D49B705A29C4D3FE009494A5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D49B705929C4D3FE009494A5 /* Preview Assets.xcassets */; };
@@ -350,6 +351,7 @@
 		17F555262AFC229900958F2F /* ServerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSettings.swift; sourceTree = "<group>"; };
 		17F8B7082C7983730065F1DE /* CreateServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateServer.swift; sourceTree = "<group>"; };
 		17F9D7622C9208B500D0BB6F /* MessageReactionsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionsSheet.swift; sourceTree = "<group>"; };
+		A0AE006B303B6E5C004B7BA4 /* InstanceSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceSelector.swift; sourceTree = "<group>"; };
 		D49B704F29C4D3FE009494A5 /* Stoat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stoat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D49B705229C4D3FE009494A5 /* StoatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoatApp.swift; sourceTree = "<group>"; };
 		D49B705629C4D3FE009494A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -610,6 +612,7 @@
 				17C9A34F2B0580D10043A387 /* Welcome.swift */,
 				1750EF6D2B0585B300DD3EB3 /* ResendEmail.swift */,
 				17C444572B06CC5400F97E4A /* ForgotPassword.swift */,
+				A0AE006B303B6E5C004B7BA4 /* InstanceSelector.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -1136,6 +1139,7 @@
 				173A336A2C422EF800B8A58E /* DeveloperSettings.swift in Sources */,
 				17BB78BA2CA4DF25000CAD87 /* OptionSet.swift in Sources */,
 				1759C39A2B291A75006E6BBE /* MessageContentsView.swift in Sources */,
+				A0AE006C303B6E5C004B7BA4 /* InstanceSelector.swift in Sources */,
 				172B0CAB2CEAE0C200012CE2 /* Optional.swift in Sources */,
 				17E019D12AF14EC000AB4663 /* ServerIcon.swift in Sources */,
 				176485752CA3947B00AF8141 /* PermissionToggle.swift in Sources */,
