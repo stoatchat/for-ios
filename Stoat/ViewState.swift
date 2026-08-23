@@ -825,7 +825,10 @@ public class ViewState: ObservableObject {
             case .error(let e):
                 print(e.data)
             case .logout:
-                try! await signOut().get()
+                if case .failure = await signOut() {
+                    self.ws?.stop()
+                    setSignedOutState()
+                }
             case .pong(let e):
                 print("ponog")
             case .message_remove_reaction(let e):
