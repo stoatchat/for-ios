@@ -113,7 +113,9 @@ struct Welcome: View {
                 }
             }
             .onAppear {
-                viewState.isOnboarding = false
+                if viewState.isOnboarding {
+                    viewState.isOnboarding = false
+                }
             }
             .task {
                 viewState.apiInfo = try? await viewState.http.fetchApiInfo().get()
