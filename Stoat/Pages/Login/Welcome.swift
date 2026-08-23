@@ -13,6 +13,7 @@ struct Welcome: View {
     @State private var path = NavigationPath()
     @State private var mfaTicket = ""
     @State private var mfaMethods: [String] = []
+    @State private var showInstanceSelector = false
     @Binding var wasSignedOut: Bool
 
     @Environment(\.colorScheme) var colorScheme: ColorScheme
@@ -84,6 +85,18 @@ struct Welcome: View {
                             .cornerRadius(50)
                     }
                     
+                    Button {
+                        showInstanceSelector = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "server.rack")
+                            Text(URL(string: viewState.apiUrl)?.host ?? viewState.apiUrl)
+                        }
+                        .font(.footnote)
+                        .foregroundColor(Color(white: 0.584))
+                    }
+                    .padding(.top, 12)
+                    
                     Spacer()
                     
                     Group {
@@ -111,6 +124,9 @@ struct Welcome: View {
                     }
                     
                 }
+            }
+            .sheet(isPresented: $showInstanceSelector) {
+                InstanceSelector()
             }
             .onAppear {
                 viewState.isOnboarding = false
