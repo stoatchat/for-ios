@@ -483,6 +483,13 @@ struct MessageBox: View {
 
                     TextField("", text: $content.animation(), axis: .vertical)
                         .focused(focusState)
+                        .onKeyPress(.return, phases: .down) { press in
+                            // Shift+Return inserts a newline, plain Return sends (hardware keyboards)
+                            guard !press.modifiers.contains(.shift) else { return .ignored }
+                            guard !content.isEmpty || !selectedPhotos.isEmpty else { return .handled }
+                            sendMessage()
+                            return .handled
+                        }
                         .placeholder(when: content.isEmpty) {
                             Text("Message #\(channel.getName(viewState))")
                                 .lineLimit(1)
