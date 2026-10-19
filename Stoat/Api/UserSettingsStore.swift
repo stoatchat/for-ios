@@ -143,13 +143,13 @@ class ExperimentOptionsData: Codable {
     }
     
     init(keyWasSet: @escaping () -> Void) {
-        customMarkdown = false
+        customMarkdown = true
         
         self.keyWasSet = keyWasSet
     }
     
     init() {
-        self.customMarkdown = false
+        self.customMarkdown = true
     }
     
     enum CodingKeys: String, CodingKey {
